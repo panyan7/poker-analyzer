@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import tkinter
 
@@ -42,9 +43,14 @@ class PokerAnalyzer:
         data = self.data
         if location is not None:
             data = data[data['location'] == location]
-        data = data.reset_index()
-        data_summary = self.get_summary(data)
+        data_summary = pd.Series(self.get_summary(data))
         print(data_summary)
+
+        nan_row = pd.DataFrame([[np.nan] * len(data.columns)], columns=data.columns)
+        nan_row['pnl'] = 0.0
+        nan_row['win_bb'] = 0.0
+        data = nan_row.append(data, ignore_index=True)
+        data = data.reset_index()
 
         cum_pnl = data['pnl'].cumsum()
         fig = plt.figure(figsize=[10,10])
@@ -65,7 +71,9 @@ class PokerAnalyzer:
         self.drop_unnamed_cols()
 
     def summary_table_by_loc(self):
-        print(self.data.groupby('location').apply(self.get_summary).apply(pd.Series))
+        summary_table = self.data.groupby('location').apply(self.get_summary).apply(pd.Series)
+        print(summary_table)
+        return summary_table
 
     def add_data(self, new_data):
         self.data = self.data.append(new_data)
@@ -78,7 +86,7 @@ class PokerAnalyzer:
 if __name__ == "__main__":
     analyzer = PokerAnalyzer()
     analyzer.get_pnl()
-    # analyzer.summary_table_by_loc()
-    analyzer.summary(location="Melwood")
+    analyzer.summary_table_by_loc()
+    analyzer.summary(location="Mashu")
     analyzer.save_data()
 
