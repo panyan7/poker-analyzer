@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+pd.options.mode.chained_assignment = None
 CNY_TO_USD = 0.13837
 
 class PokerAnalyzer:
@@ -52,7 +53,10 @@ class PokerAnalyzer:
         if year is not None:
             data = data[data['date'].dt.year == year]
         data_summary = pd.Series(self.get_summary(data))
-        print(data_summary)
+        data_summary_df = pd.DataFrame(columns=data_summary.index)
+        data_summary_df = data_summary_df.append(data_summary, ignore_index=True)
+        data_summary = data_summary_df
+        # print(data_summary)
 
         nan_row = pd.DataFrame([[np.nan] * len(data.columns)], columns=data.columns)
         nan_row['pnl'] = 0.0
@@ -61,7 +65,7 @@ class PokerAnalyzer:
         data = data.reset_index()
 
         cum_pnl = data['pnl'].cumsum()
-        fig = plt.figure(figsize=[10,10])
+        fig = plt.figure(figsize=[8,6])
         fig.add_subplot(2,1,1)
         plt.plot(cum_pnl, '--*', c='C0')
         plt.grid()
@@ -79,6 +83,7 @@ class PokerAnalyzer:
             title = location + '_' + title
         plt.savefig('summary/' + title)
         self.drop_unnamed_cols()
+        return data_summary
 
     def summary_table(self):
         summary_table = self.data_df.groupby('location').apply(self.get_summary).apply(pd.Series)
