@@ -82,7 +82,7 @@ class PokerAnalyzer:
 
     def summary_table(self):
         summary_table = self.data_df.groupby('location').apply(self.get_summary).apply(pd.Series)
-        print(summary_table)
+        # print(summary_table)
         return summary_table
 
     def add_data(self, new_data):
