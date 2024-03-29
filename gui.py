@@ -8,8 +8,8 @@ class Page:
     def __init__(self, analyzer, master=None):
         self.analyzer = analyzer
         self.root = master
-        self.width = 1200
-        self.height = 800
+        self.width = 1000
+        self.height = 750
         self.root.geometry(f"{self.width}x{self.height}")
 
     def create_page(self):
@@ -145,6 +145,7 @@ class SummaryPage(Page):
 
 def gui_start():
     root = tk.Tk()
+    root.title("Poker Analyzer")
     analyzer = PokerAnalyzer()
     main_page = MainPage(analyzer, master=root)
     root.mainloop()
