@@ -90,8 +90,14 @@ class PokerAnalyzer:
         # print(summary_table)
         return summary_table
 
-    def add_data(self, new_data):
-        self.data_df = self.data_df.append(new_data)
+    def add_data(self, new_data=None, **kwargs):
+        if new_data is None:
+            new_data = kwargs
+        if isinstance(new_data, dict):
+            new_data = pd.Series(new_data)
+        self.data_df = self.data_df.append(new_data, ignore_index=True)
+        self.get_pnl()
+        self.save_data()
 
     def drop_unnamed_cols(self):
         unnamed_cols = [c for c in self.data_df.columns if c.startswith("Unnamed")]

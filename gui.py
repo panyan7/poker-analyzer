@@ -50,10 +50,18 @@ class MainPage(Page):
                                     text='Summary by All Year',
                                     command=self.show_loc_summary)
         all_year_button.grid(row=2, column=2)
+        add_data_button = tk.Button(self.page,
+                                    text="Add Data",
+                                    command=self.add_data)
+        add_data_button.grid(row=3, column=3)
 
     def show_loc_summary(self):
         self.page.destroy()
         LocationSummaryPage(self.analyzer, self.root)
+
+    def add_data(self):
+        self.page.destroy()
+        DataInputPage(self.analyzer, self.root)
 
     def show_summary(self):
         location = self.loc_box.get()
@@ -141,6 +149,75 @@ class SummaryPage(Page):
                                 text='Exit',
                                 command=self.back_to_main)
         back_button.grid(row=3, column=1)
+
+
+class DataInputPage(Page):
+    def __init__(self, analyzer, master=None):
+        super().__init__(analyzer, master)
+        self.create_page()
+
+    def create_page(self):
+        super().create_page()
+        self.win_bb = tk.StringVar()
+        win_bb_label = tk.Label(self.page, text='Win/BB')
+        win_bb_label.grid(row=1, column=1)
+        self.win_bb_box = tk.Entry(self.page, textvariable=self.win_bb)
+        self.win_bb_box.grid(row=1, column=2)
+
+        self.sb_val = tk.StringVar()
+        sb_label = tk.Label(self.page, text='SB')
+        sb_label.grid(row=2, column=1)
+        self.sb_box = tk.Entry(self.page, textvariable=self.sb_val)
+        self.sb_box.grid(row=2, column=2)
+
+        self.bb_val = tk.StringVar()
+        bb_label = tk.Label(self.page, text='BB')
+        bb_label.grid(row=3, column=1)
+        self.bb_box = tk.Entry(self.page, textvariable=self.bb_val)
+        self.bb_box.grid(row=3, column=2)
+
+        currency_label = tk.Label(self.page, text='Currency')
+        currency_label.grid(row=4, column=1)
+        self.currency_box = ttk.Combobox(self.page,
+                                         values=['USD', 'CNY'])
+        self.currency_box.grid(row=4, column=2)
+
+        self.location = tk.StringVar()
+        loc_label = tk.Label(self.page, text='Location')
+        loc_label.grid(row=5, column=1)
+        self.loc_box = tk.Entry(self.page, textvariable=self.location)
+        self.loc_box.grid(row=5, column=2)
+
+        self.date = tk.StringVar()
+        date_label = tk.Label(self.page, text='Date')
+        date_label.grid(row=6, column=1)
+        self.date_box = tk.Entry(self.page, textvariable=self.date)
+        self.date_box.grid(row=6, column=2)
+
+        back_button = tk.Button(self.page,
+                                text='Exit',
+                                command=self.back_to_main)
+        back_button.grid(row=7, column=1)
+        submit_button = tk.Button(self.page,
+                                  text='Submit',
+                                  command=self.submit)
+        submit_button.grid(row=7, column=2)
+
+
+    def submit(self):
+        win_bb = float(self.win_bb.get())
+        sb_val = float(self.sb_val.get())
+        bb_val = float(self.bb_val.get())
+        currency = self.currency_box.get()
+        location = self.location.get()
+        date = pd.Timestamp(self.date.get())
+        self.analyzer.add_data(win_bb=win_bb,
+                               sb_val=sb_val,
+                               bb_val=bb_val,
+                               currency=currency,
+                               location=location,
+                               date=date)
+        self.back_to_main()
 
 
 def gui_start():
