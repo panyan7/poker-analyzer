@@ -232,8 +232,6 @@ def gui_start():
     root = tk.Tk()
     root.title("Poker Analyzer")
     analyzer = PokerAnalyzer()
-    import numpy as np
-    analyzer.data_df['num_hands'] = np.nan
     main_page = MainPage(analyzer, master=root)
     root.mainloop()
 
