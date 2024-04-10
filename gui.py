@@ -188,20 +188,26 @@ class DataInputPage(Page):
         self.loc_box = tk.Entry(self.page, textvariable=self.location)
         self.loc_box.grid(row=5, column=2)
 
+        self.num_hands = tk.StringVar()
+        hand_label = tk.Label(self.page, text='# Hands')
+        hand_label.grid(row=6, column=1)
+        self.hand_box = tk.Entry(self.page, textvariable=self.num_hands)
+        self.hand_box.grid(row=6, column=2)
+
         self.date = tk.StringVar()
         date_label = tk.Label(self.page, text='Date')
-        date_label.grid(row=6, column=1)
+        date_label.grid(row=7, column=1)
         self.date_box = tk.Entry(self.page, textvariable=self.date)
-        self.date_box.grid(row=6, column=2)
+        self.date_box.grid(row=7, column=2)
 
         back_button = tk.Button(self.page,
                                 text='Exit',
                                 command=self.back_to_main)
-        back_button.grid(row=7, column=1)
+        back_button.grid(row=8, column=1)
         submit_button = tk.Button(self.page,
                                   text='Submit',
                                   command=self.submit)
-        submit_button.grid(row=7, column=2)
+        submit_button.grid(row=8, column=2)
 
 
     def submit(self):
@@ -210,12 +216,14 @@ class DataInputPage(Page):
         bb_val = float(self.bb_val.get())
         currency = self.currency_box.get()
         location = self.location.get()
+        num_hands = self.num_hands.get()
         date = pd.Timestamp(self.date.get())
         self.analyzer.add_data(win_bb=win_bb,
                                sb_val=sb_val,
                                bb_val=bb_val,
                                currency=currency,
                                location=location,
+                               num_hands=num_hands,
                                date=date)
         self.back_to_main()
 
@@ -224,6 +232,8 @@ def gui_start():
     root = tk.Tk()
     root.title("Poker Analyzer")
     analyzer = PokerAnalyzer()
+    import numpy as np
+    analyzer.data_df['num_hands'] = np.nan
     main_page = MainPage(analyzer, master=root)
     root.mainloop()
 
