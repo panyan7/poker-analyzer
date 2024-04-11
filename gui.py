@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 from analyzer import PokerAnalyzer
 import pandas as pd
 import numpy as np
@@ -64,20 +65,23 @@ class MainPage(Page):
                                     command=self.add_data)
         add_data_button.grid(row=3, column=3)
 
-    def show_loc_summary(self):
-        if self.analyzer.data_df['location'].count() == 0:
-            return
-        self.page.destroy()
-        LocationSummaryPage(self.analyzer, self.root)
-
     def add_data(self):
         self.page.destroy()
         DataInputPage(self.analyzer, self.root)
 
+    def show_loc_summary(self):
+        if self.analyzer.data_df['location'].count() == 0:
+            messagebox.showerror("nodata", "No location data")
+            return
+        self.page.destroy()
+        LocationSummaryPage(self.analyzer, self.root)
+
     def show_summary(self):
         if self.analyzer.data_df['date'].count() == 0:
+            messagebox.showerror("nodata", "No date data")
             return
         if self.analyzer.data_df['location'].count() == 0:
+            messagebox.showerror("nodata", "No location data")
             return
         location = self.loc_box.get()
         year = self.year_box.get()
