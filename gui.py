@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from analyzer import PokerAnalyzer
 import pandas as pd
+import numpy as np
 
 
 class Page:
@@ -217,6 +218,10 @@ class DataInputPage(Page):
         currency = self.currency_box.get()
         location = self.location.get()
         num_hands = self.num_hands.get()
+        if num_hands == "":
+            num_hands = np.nan
+        else:
+            num_hands = int(num_hands)
         date = pd.Timestamp(self.date.get())
         self.analyzer.add_data(win_bb=win_bb,
                                sb_val=sb_val,
