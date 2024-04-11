@@ -34,29 +34,39 @@ class MainPage(Page):
         self.loc_box = ttk.Combobox(self.page,
                                values=loc_values)
         self.loc_box.grid(row=1, column=1)
-        year_values = list(self.analyzer.data_df['date'].dt.year.unique())
+
+        if self.analyzer.data_df['date'].count() > 0:
+            year_values = list(self.analyzer.data_df['date'].dt.year.unique())
+        else:
+            year_values = []
         year_values = [""] + list(map(str, year_values))
         self.year_box = ttk.Combobox(self.page,
                                      values=year_values)
         self.year_box.grid(row=1, column=2)
+
         summary_button = tk.Button(self.page,
                                    text="Show Summary",
                                    command=self.show_summary)
         summary_button.grid(row=1, column=3)
+
         all_loc_button = tk.Button(self.page,
                                    text='Summary by All Location',
                                    command=self.show_loc_summary)
         all_loc_button.grid(row=2, column=1)
+
         all_year_button = tk.Button(self.page,
                                     text='Summary by All Year',
                                     command=self.show_loc_summary)
         all_year_button.grid(row=2, column=2)
+
         add_data_button = tk.Button(self.page,
                                     text="Add Data",
                                     command=self.add_data)
         add_data_button.grid(row=3, column=3)
 
     def show_loc_summary(self):
+        if self.analyzer.data_df['location'].count() == 0:
+            return
         self.page.destroy()
         LocationSummaryPage(self.analyzer, self.root)
 
@@ -65,6 +75,10 @@ class MainPage(Page):
         DataInputPage(self.analyzer, self.root)
 
     def show_summary(self):
+        if self.analyzer.data_df['date'].count() == 0:
+            return
+        if self.analyzer.data_df['location'].count() == 0:
+            return
         location = self.loc_box.get()
         year = self.year_box.get()
         if location == "":

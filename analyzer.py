@@ -5,14 +5,20 @@ import matplotlib.pyplot as plt
 pd.options.mode.chained_assignment = None
 CNY_TO_USD = 0.13837
 
+
 class PokerAnalyzer:
     def __init__(self, data_path="data.csv"):
+        self.columns = ['win_bb','sb_val','bb_val','currency',
+                        'location','pnl','date','num_hands']
         self.data_path = data_path
         self.data_df = self.read_data()
 
     def read_data(self) -> pd.DataFrame:
-        self.data_df = pd.read_csv(self.data_path, parse_dates=['date'],
-                                date_parser=pd.Timestamp)
+        try:
+            self.data_df = pd.read_csv(self.data_path, parse_dates=['date'],
+                                       date_parser=pd.Timestamp)
+        except FileNotFoundError:
+            self.data_df = pd.DataFrame(columns=self.columns)
         return self.data_df
 
     def print_data(self):
@@ -21,6 +27,7 @@ class PokerAnalyzer:
 
     def save_data(self):
         self.drop_unnamed_cols()
+        self.data_df = self.data_df[self.columns]
         self.data_df.to_csv(self.data_path)
 
     def get_pnl(self):
