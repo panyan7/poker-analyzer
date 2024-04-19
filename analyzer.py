@@ -35,6 +35,7 @@ class PokerAnalyzer:
         self.data_df.loc[self.data_df['currency'] == 'CNY','pnl'] *= CNY_TO_USD
         self.data_df['cum_pnl'] = self.data_df['pnl'].cumsum()
         self.data_df = self.data_df.round({'pnl': 2, 'cum_pnl': 2})
+        return self.data_df
 
     def get_summary(self, data_df: pd.DataFrame):
         data_summary = {}
@@ -76,18 +77,28 @@ class PokerAnalyzer:
         data_df = nan_row.append(data_df, ignore_index=True)
         data_df = data_df.reset_index()
 
+        pnl = data_df['pnl']
         cum_pnl = data_df['pnl'].cumsum()
-        fig = plt.figure(figsize=[8,6])
-        fig.add_subplot(2,1,1)
+        fig = plt.figure(figsize=[8,9])
+        plt.subplots_adjust(hspace=0.5)
+        fig.add_subplot(3,1,1)
         plt.plot(cum_pnl, '--*', c='C0')
         plt.grid()
         plt.xlabel('Session')
         plt.ylabel('PnL/USD')
-        fig.add_subplot(2,1,2)
+        fig.add_subplot(3,1,2)
         plt.plot(data_df['win_bb'].cumsum(), '--*', c='C1')
         plt.grid()
         plt.xlabel('Session')
-        plt.ylabel('Win/bb')
+        plt.ylabel('Win/BB')
+        fig.add_subplot(3,2,5)
+        plt.hist(pnl, color='C0')
+        plt.grid()
+        plt.xlabel('PnL')
+        fig.add_subplot(3,2,6)
+        plt.hist(data_df['win_bb'], color='C1')
+        plt.grid()
+        plt.xlabel('Win/BB')
         title = 'summary.png'
         if year is not None:
             title = str(year) + '_' + title

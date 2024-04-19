@@ -7,11 +7,11 @@ import numpy as np
 
 
 class Page:
-    def __init__(self, analyzer, master=None):
+    def __init__(self, analyzer, master=None, width=500, height=500):
         self.analyzer = analyzer
         self.root = master
-        self.width = 1000
-        self.height = 750
+        self.width = width
+        self.height = height
         self.root.geometry(f"{self.width}x{self.height}")
 
     def create_page(self):
@@ -24,8 +24,8 @@ class Page:
 
 
 class MainPage(Page):
-    def __init__(self, analyzer, master=None):
-        super().__init__(analyzer, master)
+    def __init__(self, analyzer, master=None, width=500, height=500):
+        super().__init__(analyzer, master, width, height)
         self.create_page()
 
     def create_page(self):
@@ -43,17 +43,17 @@ class MainPage(Page):
         year_values = [""] + list(map(str, year_values))
         self.year_box = ttk.Combobox(self.page,
                                      values=year_values)
-        self.year_box.grid(row=1, column=2)
+        self.year_box.grid(row=2, column=1)
 
         summary_button = tk.Button(self.page,
                                    text="Show Summary",
                                    command=self.show_summary)
-        summary_button.grid(row=1, column=3)
+        summary_button.grid(row=3, column=1)
 
         all_loc_button = tk.Button(self.page,
                                    text='Summary by All Location',
                                    command=self.show_loc_summary)
-        all_loc_button.grid(row=2, column=1)
+        all_loc_button.grid(row=1, column=2)
 
         all_year_button = tk.Button(self.page,
                                     text='Summary by All Year',
@@ -63,7 +63,7 @@ class MainPage(Page):
         add_data_button = tk.Button(self.page,
                                     text="Add Data",
                                     command=self.add_data)
-        add_data_button.grid(row=3, column=3)
+        add_data_button.grid(row=3, column=2)
 
     def add_data(self):
         self.page.destroy()
@@ -96,8 +96,8 @@ class MainPage(Page):
 
 
 class LocationSummaryPage(Page):
-    def __init__(self, analyzer, master=None):
-        super().__init__(analyzer, master)
+    def __init__(self, analyzer, master=None, width=1000, height=500):
+        super().__init__(analyzer, master, width, height)
         self.create_page()
 
     def create_page(self):
@@ -127,8 +127,9 @@ class LocationSummaryPage(Page):
 
 
 class SummaryPage(Page):
-    def __init__(self, analyzer, master=None, location=None, year=None):
-        super().__init__(analyzer, master)
+    def __init__(self, analyzer, master=None, width=1000, height=1000,
+                 location=None, year=None):
+        super().__init__(analyzer, master, width, height)
         self.location = location
         self.year = year
         self.create_page()
@@ -171,8 +172,8 @@ class SummaryPage(Page):
 
 
 class DataInputPage(Page):
-    def __init__(self, analyzer, master=None):
-        super().__init__(analyzer, master)
+    def __init__(self, analyzer, master=None, width=500, height=500):
+        super().__init__(analyzer, master, width, height)
         self.create_page()
 
     def create_page(self):
