@@ -127,7 +127,7 @@ class LocationSummaryPage(Page):
 
 
 class SummaryPage(Page):
-    def __init__(self, analyzer, master=None, width=1000, height=1000,
+    def __init__(self, analyzer, master=None, width=1000, height=800,
                  location=None, year=None):
         super().__init__(analyzer, master, width, height)
         self.location = location
@@ -178,11 +178,11 @@ class DataInputPage(Page):
 
     def create_page(self):
         super().create_page()
-        self.win_bb = tk.StringVar()
-        win_bb_label = tk.Label(self.page, text='Win/BB')
-        win_bb_label.grid(row=1, column=1)
-        self.win_bb_box = tk.Entry(self.page, textvariable=self.win_bb)
-        self.win_bb_box.grid(row=1, column=2)
+        self.win_val = tk.StringVar()
+        win_val_label = tk.Label(self.page, text='Win/Chips')
+        win_val_label.grid(row=1, column=1)
+        self.win_val_box = tk.Entry(self.page, textvariable=self.win_val)
+        self.win_val_box.grid(row=1, column=2)
 
         self.sb_val = tk.StringVar()
         sb_label = tk.Label(self.page, text='SB')
@@ -231,7 +231,7 @@ class DataInputPage(Page):
 
 
     def submit(self):
-        win_bb = float(self.win_bb.get())
+        win_val = float(self.win_val.get())
         sb_val = float(self.sb_val.get())
         bb_val = float(self.bb_val.get())
         currency = self.currency_box.get()
@@ -242,7 +242,7 @@ class DataInputPage(Page):
         else:
             num_hands = int(num_hands)
         date = pd.Timestamp(self.date.get())
-        self.analyzer.add_data(win_bb=win_bb,
+        self.analyzer.add_data(win_val=win_val,
                                sb_val=sb_val,
                                bb_val=bb_val,
                                currency=currency,

@@ -8,8 +8,8 @@ CNY_TO_USD = 0.13837
 
 class PokerAnalyzer:
     def __init__(self, data_path="data.csv"):
-        self.columns = ['win_bb','sb_val','bb_val','currency',
-                        'location','pnl','date','num_hands']
+        self.columns = ['win_val','sb_val','bb_val','win_bb','currency',
+                        'location','pnl','date','num_hands',]
         self.data_path = data_path
         self.data_df = self.read_data()
 
@@ -31,10 +31,12 @@ class PokerAnalyzer:
         self.data_df.to_csv(self.data_path)
 
     def get_pnl(self):
-        self.data_df['pnl'] = self.data_df['win_bb'] * self.data_df['bb_val']
+        self.data_df['win_bb'] = self.data_df['win_val'] / self.data_df['bb_val']
+        self.data_df = self.data_df.round(2)
+        self.data_df['pnl'] = self.data_df['win_val']
         self.data_df.loc[self.data_df['currency'] == 'CNY','pnl'] *= CNY_TO_USD
         self.data_df['cum_pnl'] = self.data_df['pnl'].cumsum()
-        self.data_df = self.data_df.round({'pnl': 2, 'cum_pnl': 2})
+        self.data_df = self.data_df.round(2)
         return self.data_df
 
     def get_summary(self, data_df: pd.DataFrame):
@@ -65,21 +67,22 @@ class PokerAnalyzer:
             data_df = data_df[data_df['location'] == location]
         if year is not None:
             data_df = data_df[data_df['date'].dt.year == year]
-        data_summary = pd.Series(self.get_summary(data_df))
-        data_summary_df = pd.DataFrame(columns=data_summary.index)
-        data_summary_df = data_summary_df.append(data_summary, ignore_index=True)
-        data_summary = data_summary_df
+        data_summary = self.get_summary(data_df)
+        data_summary = {k: [v] for k, v in data_summary.items()}
+        data_summary = pd.DataFrame(data_summary)
+        data_summary_df = pd.DataFrame(columns=data_summary.columns)
+        data_summary_df = pd.concat([data_summary_df, data_summary], ignore_index=True)
 
         nan_row = pd.DataFrame([[np.nan] * len(data_df.columns)],
                                columns=data_df.columns)
         nan_row['pnl'] = 0.0
         nan_row['win_bb'] = 0.0
-        data_df = nan_row.append(data_df, ignore_index=True)
+        data_df = pd.concat([nan_row, data_df], ignore_index=True)
         data_df = data_df.reset_index()
 
         pnl = data_df['pnl']
         cum_pnl = data_df['pnl'].cumsum()
-        fig = plt.figure(figsize=[8,9])
+        fig = plt.figure(figsize=[8,8])
         plt.subplots_adjust(hspace=0.5)
         fig.add_subplot(3,1,1)
         plt.plot(cum_pnl, '--*', c='C0')
@@ -104,9 +107,9 @@ class PokerAnalyzer:
             title = str(year) + '_' + title
         if location is not None:
             title = location + '_' + title
-        plt.savefig('summary/' + title)
+        plt.savefig('summary/' + title, bbox_inches='tight')
         self.drop_unnamed_cols()
-        return data_summary
+        return data_summary_df
 
     def summary_table(self):
         summary_table = self.data_df.groupby('location') \
