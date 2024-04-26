@@ -121,8 +121,9 @@ class PokerAnalyzer:
         if new_data is None:
             new_data = kwargs
         if isinstance(new_data, dict):
-            new_data = pd.Series(new_data)
-        self.data_df = self.data_df.append(new_data, ignore_index=True)
+            new_data = {k: [v] for k, v in new_data.items()}
+            new_data = pd.DataFrame(new_data)
+        self.data_df = pd.concat([self.data_df, new_data], ignore_index=True)
         self.get_pnl()
         self.save_data()
 
