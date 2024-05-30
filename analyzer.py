@@ -54,11 +54,9 @@ class PokerAnalyzer:
             data_summary['pnl_per_hand'] = data_df['pnl'].sum() / num_hands
 
         data_df['streak_id'] = data_df['pnl'].lt(0).cumsum()
-        streak_sizes = data_df.groupby('streak_id')['pnl'].transform('size')
-        streak_df = data_df[streak_sizes == streak_sizes.max()]
-        if streak_df['pnl'].iloc[0] <= 0:
-            streak_df = streak_df.iloc[1:]
-        data_summary['longest_streak'] = int(streak_df['pnl'].count())
+        win_df = data_df[data_df['pnl'].gt(0)]
+        streak_sizes = win_df.groupby('streak_id')['pnl'].transform('size')
+        data_summary['longest_streak'] = int(streak_sizes.max())
         return data_summary
 
     def summary(self, location=None, year=None):
