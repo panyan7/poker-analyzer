@@ -50,14 +50,16 @@ class MainPage(Page):
                                    command=self.show_summary)
         summary_button.grid(row=3, column=1)
 
+        show_loc_summary = lambda: self.show_full_summary(index='location')
         all_loc_button = tk.Button(self.page,
                                    text='Summary by All Location',
-                                   command=self.show_loc_summary)
+                                   command=show_loc_summary)
         all_loc_button.grid(row=1, column=2)
 
+        show_year_summary = lambda: self.show_full_summary(index='year')
         all_year_button = tk.Button(self.page,
                                     text='Summary by All Year',
-                                    command=self.show_loc_summary)
+                                    command=show_year_summary)
         all_year_button.grid(row=2, column=2)
 
         add_data_button = tk.Button(self.page,
@@ -69,12 +71,12 @@ class MainPage(Page):
         self.page.destroy()
         DataInputPage(self.analyzer, self.root)
 
-    def show_loc_summary(self):
-        if self.analyzer.data_df['location'].count() == 0:
-            messagebox.showerror("nodata", "No location data")
+    def show_full_summary(self, index):
+        if index != 'year' and self.analyzer.data_df[index].count() == 0:
+            messagebox.showerror("nodata", f"No {index} data")
             return
         self.page.destroy()
-        LocationSummaryPage(self.analyzer, self.root)
+        FullSummaryPage(self.analyzer, self.root, index=index)
 
     def show_summary(self):
         if self.analyzer.data_df['date'].count() == 0:
@@ -95,19 +97,21 @@ class MainPage(Page):
         SummaryPage(self.analyzer, self.root, location=location, year=year)
 
 
-class LocationSummaryPage(Page):
-    def __init__(self, analyzer, master=None, width=1000, height=500):
+class FullSummaryPage(Page):
+    def __init__(self, analyzer, master=None, width=1000, height=500,
+                 index=None):
         super().__init__(analyzer, master, width, height)
+        self.index = index
         self.create_page()
 
     def create_page(self):
         super().create_page()
-        summary_table = self.analyzer.summary_table()
+        summary_table = self.analyzer.summary_table(self.index)
         summary_list = list(summary_table.itertuples(index=True, name=None))
         round_numbers = lambda x: round(x, 2) if isinstance(x, float) else x
         round_tuple = lambda x: tuple(map(round_numbers, x))
         summary_list = list(map(round_tuple, summary_list))
-        columns = ("location", *tuple(summary_table.columns))
+        columns = (self.index, *tuple(summary_table.columns))
         tree = ttk.Treeview(self.page,
                             columns=columns,
                             show='headings',

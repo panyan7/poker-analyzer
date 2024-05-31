@@ -112,8 +112,11 @@ class PokerAnalyzer:
         self.drop_unnamed_cols()
         return data_summary_df
 
-    def summary_table(self):
-        summary_table = self.data_df.groupby('location') \
+    def summary_table(self, index=None):
+        assert index is not None
+        if index == 'year':
+            self.data_df['year'] = self.data_df['date'].dt.year
+        summary_table = self.data_df.groupby(index) \
                                     .apply(self.get_summary) \
                                     .apply(pd.Series)
         return summary_table
