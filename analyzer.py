@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 pd.options.mode.chained_assignment = None
-CNY_TO_USD = 0.13837
+RMB_TO_USD = 0.13837
 
 
 class PokerAnalyzer:
@@ -34,7 +34,7 @@ class PokerAnalyzer:
         self.data_df['win_bb'] = self.data_df['win_val'] / self.data_df['bb_val']
         self.data_df = self.data_df.round(2)
         self.data_df['pnl'] = self.data_df['win_val']
-        self.data_df.loc[self.data_df['currency'] == 'CNY','pnl'] *= CNY_TO_USD
+        self.data_df.loc[self.data_df['currency'] == 'RMB','pnl'] *= RMB_TO_USD
         self.data_df['cum_pnl'] = self.data_df['pnl'].cumsum()
         self.data_df = self.data_df.round(2)
         return self.data_df
@@ -116,6 +116,10 @@ class PokerAnalyzer:
         assert index is not None
         if index == 'year':
             self.data_df['year'] = self.data_df['date'].dt.year
+        if index == 'stake':
+            self.data_df['stake'] = self.data_df['sb_val'].astype(str) + '/' \
+                                    + self.data_df['bb_val'].astype(str) + \
+                                    + self.data_df['currency'].astype(str)
         summary_table = self.data_df.groupby(index) \
                                     .apply(self.get_summary) \
                                     .apply(pd.Series)

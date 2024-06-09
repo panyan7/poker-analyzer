@@ -62,17 +62,24 @@ class MainPage(Page):
                                     command=show_year_summary)
         all_year_button.grid(row=2, column=2)
 
+        show_stake_summary = lambda: self.show_full_summary(index='stake')
+        all_stake_button = tk.Button(self.page,
+                                     text='Summary by All Stakes',
+                                     command=show_stake_summary)
+        all_stake_button.grid(row=3, column=2)
+
         add_data_button = tk.Button(self.page,
                                     text="Add Data",
                                     command=self.add_data)
-        add_data_button.grid(row=3, column=2)
+        add_data_button.grid(row=4, column=2)
+
 
     def add_data(self):
         self.page.destroy()
         DataInputPage(self.analyzer, self.root)
 
     def show_full_summary(self, index):
-        if index != 'year' and self.analyzer.data_df[index].count() == 0:
+        if index == 'location' and self.analyzer.data_df[index].count() == 0:
             messagebox.showerror("nodata", f"No {index} data")
             return
         self.page.destroy()
@@ -203,7 +210,7 @@ class DataInputPage(Page):
         currency_label = tk.Label(self.page, text='Currency')
         currency_label.grid(row=4, column=1)
         self.currency_box = ttk.Combobox(self.page,
-                                         values=['USD', 'CNY'])
+                                         values=['USD', 'RMB'])
         self.currency_box.grid(row=4, column=2)
 
         self.location = tk.StringVar()
