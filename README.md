@@ -1,8 +1,10 @@
 # Poker Analyzer
 
-You should have `pandas` and `tkinter` installed.
+A simple poker analyzer (and bankroll tracker) that supports analyzing your performance in different locations, time, and stakes.
 
 ## Install the App
+
+You should have `pandas` and `tkinter` installed.
 
 To compile the application using pyinstaller:
 1. Install pyinstaller using `$ pip install pyinstaller`

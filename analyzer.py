@@ -8,15 +8,13 @@ RMB_TO_USD = 0.13837
 
 class PokerAnalyzer:
     def __init__(self, data_path="data.csv"):
-        self.columns = ['win_val','sb_val','bb_val','win_bb','currency',
-                        'location','pnl','date','num_hands',]
+        self.columns = ['win_val','sb_val','bb_val','win_bb','currency', 'location','pnl','date','num_hands']
         self.data_path = data_path
         self.data_df = self.read_data()
 
     def read_data(self) -> pd.DataFrame:
         try:
-            self.data_df = pd.read_csv(self.data_path, parse_dates=['date'],
-                                       date_parser=pd.Timestamp)
+            self.data_df = pd.read_csv(self.data_path, parse_dates=['date'], date_parser=pd.Timestamp)
         except FileNotFoundError:
             self.data_df = pd.DataFrame(columns=self.columns)
         return self.data_df
@@ -47,6 +45,7 @@ class PokerAnalyzer:
         data_summary['average_pnl'] = data_df['pnl'].mean()
         data_summary['total_win_bb'] = data_df['win_bb'].sum()
         data_summary['average_win_bb'] = data_df['win_bb'].mean()
+
         if data_df['num_hands'].count() > 0:
             mean_hands = data_df['num_hands'].mean()
             num_hands = data_df['num_hands'].fillna(mean_hands).sum()
@@ -68,14 +67,14 @@ class PokerAnalyzer:
             data_df = data_df[data_df['location'] == location]
         if year is not None:
             data_df = data_df[data_df['date'].dt.year == year]
+
         data_summary = self.get_summary(data_df)
         data_summary = {k: [v] for k, v in data_summary.items()}
         data_summary = pd.DataFrame(data_summary)
         data_summary_df = pd.DataFrame(columns=data_summary.columns)
         data_summary_df = pd.concat([data_summary_df, data_summary], ignore_index=True)
 
-        nan_row = pd.DataFrame([[np.nan] * len(data_df.columns)],
-                               columns=data_df.columns)
+        nan_row = pd.DataFrame([[np.nan] * len(data_df.columns)], columns=data_df.columns)
         nan_row['pnl'] = 0.0
         nan_row['win_bb'] = 0.0
         data_df = pd.concat([nan_row, data_df], ignore_index=True)
@@ -120,9 +119,7 @@ class PokerAnalyzer:
             self.data_df['stake'] = self.data_df['sb_val'].astype(str) + '/' \
                                     + self.data_df['bb_val'].astype(str) + \
                                     + self.data_df['currency'].astype(str)
-        summary_table = self.data_df.groupby(index) \
-                                    .apply(self.get_summary) \
-                                    .apply(pd.Series)
+        summary_table = self.data_df.groupby(index).apply(self.get_summary).apply(pd.Series)
         return summary_table
 
     def add_data(self, new_data=None, **kwargs):
