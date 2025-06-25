@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 pd.options.mode.chained_assignment = None
-RMB_TO_USD = 0.13837
+RMB_TO_USD = 0.1377
 
 
 class PokerAnalyzer:
@@ -15,6 +15,7 @@ class PokerAnalyzer:
     def read_data(self) -> pd.DataFrame:
         try:
             self.data_df = pd.read_csv(self.data_path, parse_dates=['date'], date_parser=pd.Timestamp)
+            self.data_df = self.data_df.sort_values(by='date')
         except FileNotFoundError:
             self.data_df = pd.DataFrame(columns=self.columns)
         return self.data_df
@@ -24,6 +25,7 @@ class PokerAnalyzer:
         print(self.data_df)
 
     def save_data(self):
+        self.data_df = self.data_df.sort_values(by='date')
         self.drop_unnamed_cols()
         self.data_df = self.data_df[self.columns]
         self.data_df.to_csv(self.data_path)
@@ -62,6 +64,7 @@ class PokerAnalyzer:
         return data_summary
 
     def summary(self, location=None, year=None):
+        self.data_df = self.data_df.sort_values(by='date')
         data_df = self.data_df
         if location is not None:
             data_df = data_df[data_df['location'] == location]
@@ -129,6 +132,7 @@ class PokerAnalyzer:
             new_data = {k: [v] for k, v in new_data.items()}
             new_data = pd.DataFrame(new_data)
         self.data_df = pd.concat([self.data_df, new_data], ignore_index=True)
+        self.data_df = self.data_df.sort_values(by='date')
         self.get_pnl()
         self.save_data()
 
